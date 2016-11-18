@@ -1,0 +1,305 @@
+@model MonteCarlo_Shradha.Models.ForecastedProduct
+
+@{
+    ViewBag.Title = "Forecasted Product";
+}
+
+<html>
+<head>
+    <link rel="stylesheet" href="~/Content/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Content/css/Styles.css" />
+    <title>@Model.productName | Forecast</title>
+</head>
+<body>
+    <h1>@Model.productName</h1>
+    <hr />
+    <br />
+    <div class="page-content">
+        <div class="row">
+            <h3 class="col-xs-6">Date: @Model.forecastDate</h3>
+            <h3 class="col-xs-6">NRCode: @Model.nrCode</h3>
+        </div>
+        <div class="row">
+            <div class="col-xs-6">
+                <h3><strong>Assumptions</strong></h3>
+                <h4>Iterations: @Model.iterations</h4>
+                <h4>Number of previous months: @Model.numberOfPrevMonths</h4>
+                <h4>Number of months to forecast for: @Model.numberOfForecastMonths</h4>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <h4>Lower Custom Percentages (%):</h4>
+                        <ul>
+                            @foreach (var percentage in Model.initialLowerPercentages)
+                            {
+                                <li>@percentage</li>
+                            }
+                        </ul>
+                    </div>
+                    <div class="col-xs-6">
+                        <h4>Upper Custom Percentages (%):</h4>
+                        <ul>
+                            @foreach (var percentage in Model.initialUpperPercentages)
+                            {
+                                <li>@percentage</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6">
+                <h3><strong>Results</strong></h3>
+                <h4>Total sales from @Model.predictedMonthlySales.ElementAt(Model.predictedMonthlySales.Count - Model.numberOfForecastMonths - 1).Key : @Model.lastMonthSales</h4>
+                <h4>Total sales from month before @Model.predictedMonthlySales.First().Key : @Model.monthBeforeBacktestingSales</h4>
+                <div>
+                    <h4>Total Average % Difference</h4>
+                    <ul>
+                        @foreach (var percentage in Model.totalPercentageDifferences)
+                        {
+                            <li>@percentage</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <br />
+    <table>
+        <tr>
+            <th width="6.5%">Date &nbsp; &nbsp;</th>
+            <th>Actual Sales &nbsp; &nbsp;</th>
+            <th>Predicted Sales &nbsp; &nbsp;</th>
+            <th>Mean Sales Difference &nbsp; &nbsp;</th>
+            <th>Mean % Difference &nbsp; &nbsp;</th>
+            <th>25% Lower Bounds &nbsp; &nbsp;</th>
+            <th>75% Upper Bounds &nbsp; &nbsp;</th>
+            <th>5% Lower Bounds &nbsp; &nbsp;</th>
+            <th>Lower Sales Difference &nbsp; &nbsp;</th>
+            <th>Lower % Difference &nbsp; &nbsp;</th>
+            <th>95% Upper Bounds &nbsp; &nbsp;</th>
+            <th>Upper Sales Difference &nbsp; &nbsp;</th>
+            <th>Upper % Difference &nbsp; &nbsp;</th>
+        </tr>
+        <tr>
+            <td>
+                @foreach (var month in Model.predictedMonthlySales.Reverse())
+                {
+                    if (month.Key == DateTime.Today.ToString("MMM yyyy")) //Separate current month & future months from previous months
+                    {
+                        <p>@month.Key</p>
+                        <hr />
+                    }
+                    else
+                    {
+                        <p>@month.Key</p>
+                    }
+                }
+            </td>
+            <td>
+                @for (var i = 0; i < Model.numberOfForecastMonths; i++)
+                {
+                    <p>---</p>
+                }
+                <hr />
+                @foreach (var actualSale in Model.actualMonthlySales.Reverse())
+                {
+                    if (actualSale.Key == DateTime.Today.ToString("MMM yyyy")) //Separate current month & future months from previous months
+                    {
+                        <p>@actualSale.Value</p>
+                        <hr />
+                    }
+                    else
+                    {
+                        <p>@actualSale.Value</p>
+                    }
+                }
+            </td>
+            <td>
+                @foreach (var predictedSale in Model.predictedMonthlySales.Reverse())
+                {
+                    if (predictedSale.Key == DateTime.Today.ToString("MMM yyyy"))
+                    {
+                        <p>@predictedSale.Value</p>
+                        <hr />
+                    }
+                    else
+                    {
+                        <p>@predictedSale.Value</p>
+                    }
+                }
+            </td>
+            <td>
+                @for (var i = 0; i < Model.numberOfForecastMonths; i++)
+                {
+                    <p>---</p>
+                }
+                <hr />
+                @foreach (var difference in Model.meanSalesDifference.Reverse())
+                {
+                    if (difference.Key == DateTime.Today.ToString("MMM yyyy"))
+                    {
+                        <p>@difference.Value</p>
+                        <hr />
+                    }
+                    else
+                    {
+                        <p>@difference.Value</p>
+                    }
+                }
+            </td>
+            <td>
+                @for (var i = 0; i < Model.numberOfForecastMonths; i++)
+                {
+                    <p>---</p>
+                }
+                <hr />
+                @foreach (var difference in Model.meanPercentageDifference.Reverse())
+                {
+                    if (difference.Key == DateTime.Today.ToString("MMM yyyy"))
+                    {
+                        <p>@difference.Value</p>
+                        <hr />
+                    }
+                    else
+                    {
+                        <p>@difference.Value</p>
+                    }
+                }
+            </td>
+            <td>
+                @foreach (var lBound in Model.monthlyLowerBounds.Reverse())
+                {
+                    if (lBound.Key == DateTime.Today.ToString("MMM yyyy"))
+                    {
+                        <p>@lBound.Value</p>
+                        <hr />
+                    }
+                    else
+                    {
+                        <p>@lBound.Value</p>
+                    }
+                }
+            </td>
+            <td>
+                @foreach (var uBound in Model.monthlyUpperBounds.Reverse())
+                {
+                    if (uBound.Key == DateTime.Today.ToString("MMM yyyy"))
+                    {
+                        <p>@uBound.Value</p>
+                        <hr />
+                    }
+                    else
+                    {
+                        <p>@uBound.Value</p>
+                    }
+                }
+            </td>
+            <td>
+                @foreach (var lBound in Model.ninetyFiveLowerBounds.Reverse())
+                {
+                    if (lBound.Key == DateTime.Today.ToString("MMM yyyy"))
+                    {
+                        <p>@lBound.Value</p>
+                        <hr />
+                    }
+                    else
+                    {
+                        <p>@lBound.Value</p>
+                    }
+                }
+            </td>
+            <td>
+                @for (var i = 0; i < Model.numberOfForecastMonths; i++)
+                {
+                    <p>---</p>
+                }
+                <hr />
+                @foreach (var difference in Model.lowerSalesDifference.Reverse())
+                {
+                    if (difference.Key == DateTime.Today.ToString("MMM yyyy"))
+                    {
+                        <p>@difference.Value</p>
+                        <hr />
+                    }
+                    else
+                    {
+                        <p>@difference.Value</p>
+                    }
+                }
+            </td>
+            <td>
+                @for (var i = 0; i < Model.numberOfForecastMonths; i++)
+                {
+                    <p>---</p>
+                }
+                <hr />
+                @foreach (var difference in Model.lowerPercentageDifference.Reverse())
+                {
+                    if (difference.Key == DateTime.Today.ToString("MMM yyyy"))
+                    {
+                        <p>@difference.Value</p>
+                        <hr />
+                    }
+                    else
+                    {
+                        <p>@difference.Value</p>
+                    }
+                }
+            </td>
+            <td>
+                @foreach (var uBound in Model.ninetyFiveUpperBounds.Reverse())
+                {
+                    if (uBound.Key == DateTime.Today.ToString("MMM yyyy"))
+                    {
+                        <p>@uBound.Value</p>
+                        <hr />
+                    }
+                    else
+                    {
+                        <p>@uBound.Value</p>
+                    }
+                }
+            </td>
+            <td>
+                @for (var i = 0; i < Model.numberOfForecastMonths; i++)
+                {
+                    <p>---</p>
+                }
+                <hr />
+                @foreach (var difference in Model.upperSalesDifference.Reverse())
+                {
+                    if (difference.Key == DateTime.Today.ToString("MMM yyyy"))
+                    {
+                        <p>@difference.Value</p>
+                        <hr />
+                    }
+                    else
+                    {
+                        <p>@difference.Value</p>
+                    }
+                }
+            </td>
+            <td>
+                @for (var i = 0; i < Model.numberOfForecastMonths; i++)
+                {
+                    <p>---</p>
+                }
+                <hr />
+                @foreach (var difference in Model.upperPercentageDifference.Reverse())
+                {
+                    if (difference.Key == DateTime.Today.ToString("MMM yyyy"))
+                    {
+                        <p>@difference.Value</p>
+                        <hr />
+                    }
+                    else
+                    {
+                        <p>@difference.Value</p>
+                    }
+                }
+            </td>
+        </tr>
+    </table>
+    <h4>@Model.productJson</h4>
+</body>
+</html>
