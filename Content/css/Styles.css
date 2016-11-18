@@ -1,0 +1,64 @@
+body {
+    font-family: serif;
+    margin-top: 5%;
+}
+
+/*Header Styling*/
+
+h1 {
+    font-size: 30pt;
+    text-align: center;
+    font-family: serif;
+}
+
+h2 {
+    margin-bottom: 25px;
+    font-family: serif;
+}
+
+h3 {
+    font-family: serif;
+}
+
+h4 {
+    font-family: serif;
+}
+
+/*Page Styling*/
+
+.page-content {
+    margin-left: 10%;
+    margin-bottom: 5%;
+}
+
+form {
+    margin-right: 15%;
+}
+
+.titles {
+    text-align: center;
+    font-size: 18pt;
+    font-weight: bold;
+}
+
+/*Table Styling*/
+
+table {
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-bottom: 125px;
+}
+
+th {
+    text-align: center;
+    font-size: 15pt;
+    padding-bottom: 30px;
+}
+
+td {
+  text-align: center;
+}
+
+.actual-predicted-sales {
+    text-align: center;
+}
