@@ -1,0 +1,221 @@
+@model MonteCarlo_Shradha.Models.ForecastedAccount
+
+@{
+    ViewBag.Title = "Forecasted Account";
+}
+
+<html>
+<head>
+    <link rel="stylesheet" href="~/Content/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Content/css/Styles.css" />
+    <title>@Model.brandName | Forecast</title>
+</head>
+<body>
+    <h1>@Model.brandName</h1>
+    <hr />
+    <br />
+    <div class="page-content">
+        <div class="row">
+            <h3 class="col-xs-4">Date: @Model.forecastDate</h3>
+            <h3 class="col-xs-4">Account Code: @Model.accountCode</h3>
+            <h3 class="col-xs-4">Account Number: @Model.accountNumber</h3>
+        </div>
+        <div>
+            <h3><strong>Assumptions</strong></h3>
+            <div class="row">
+                <div class="col-xs-3">
+                    <h4>Iterations: @Model.iterations</h4>
+                    <h4>Number of Previous Months: @Model.numberOfPrevMonths</h4>
+                    <h4>Number of Months to Forecast: @Model.numberOfForecastMonths</h4>
+                </div>
+                <div class="col-xs-3">
+                    <h4>Lower Custom Percentages (%):</h4>
+                    <ul>
+                        @foreach (var percentage in Model.initialLowerPercentages)
+                        {
+                            <li>@percentage</li>
+                        }
+                    </ul>
+                </div>
+                <div class="col-xs-3">
+                    <h4>Upper Custom Percentages (%):</h4>
+                    <ul>
+                        @foreach (var percentage in Model.initialUpperPercentages)
+                        {
+                            <li>@percentage</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div>
+            <h3><strong>Results</strong></h3>
+            <h4>Number of Products: @Model.productsList.Count</h4>
+            <h4>Total Mean % Diff: +/- @Model.totalMeanPercDifference %</h4>
+            <h4>Total Lower % Diff: +/- @Model.totalLowerPercDifference %</h4>
+            <h4>Total Upper % Diff: +/- @Model.totalUpperPercDifference %</h4>
+        </div>
+    </div>
+    <hr />
+    @foreach (var product in Model.productsList)
+    {
+        <br />
+        <div>
+            <h1>@product.productName</h1>
+            <br />
+            <div class="page-content">
+                <h3>NRCode: @product.nrCode</h3>
+                <div>
+                    <h3><strong>Results</strong></h3>
+                    <div class="col-xs-6">
+                        <h4>Total sales from @product.predictedMonthlySales.ElementAt(product.predictedMonthlySales.Count - Model.numberOfForecastMonths - 1).Key : @product.lastMonthSales</h4>
+                        <h4>Total sales from month before @product.predictedMonthlySales.First().Key : @product.monthBeforeBacktestingSales</h4>
+                    </div>
+                    <div class="col-xs-6">
+                        <h3>Total Average % Difference</h3>
+                        <ul>
+                            @foreach (var percentage in product.totalPercentageDifferences)
+                            {
+                                <li>@percentage</li>
+                            }
+                        </ul>
+                    </div>
+                    <br />
+                    <br />
+                </div>
+            </div>
+            <br />
+            <table border="1">
+                <tr>
+                    <td></td> @*Kept empty for row names*@
+                    @foreach (var month in product.predictedMonthlySales)
+                    {
+                        if (month.Key == DateTime.Today.ToString("MMM yyyy")) //Separate current month & future months from previous months
+                        {
+                            <th colspan="3">@month.Key &nbsp; &nbsp;</th>
+                        }
+                        else
+                        {
+                            <th colspan="3">@month.Key &nbsp; &nbsp;</th>
+                        }
+                    }
+                </tr>
+                <tr>
+                    <td></td> @*Kept empty for row names*@
+                </tr>
+                <tr>
+                    <td>
+                        <h4>Actual Sales &nbsp; &nbsp;</h4>
+                    </td>
+                    @foreach (var actualSale in product.actualMonthlySales)
+                    {
+                        <td colspan="3" class="actual-predicted-sales">
+                            <p>@actualSale.Value</p>
+                        </td>
+                    }
+                </tr>
+                <tr>
+                    <td>
+                        <h4>Predicted Sales &nbsp; &nbsp;</h4>
+                    </td>
+                    @foreach (var predictedSale in product.predictedMonthlySales)
+                    {
+                        <td colspan="3" class="actual-predicted-sales">
+                            <p>@predictedSale.Value</p>
+                        </td>
+                    }
+                </tr>
+                <tr>
+                    <td></td> @*Kept empty for row names*@
+                    @for (var i = 0; i < product.predictedMonthlySales.Count; i++)
+                    {
+                        if (i > 0) //Abbreviate column labels
+                        {
+                            <td>
+                                <p>L</p>
+                            </td>
+                            <td>
+                                <p>M</p>
+                            </td>
+                            <td>
+                                <p>U</p>
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                <p>Lower</p>
+                            </td>
+                            <td>
+                                <p>Median</p>
+                            </td>
+                            <td>
+                                <p>Upper</p>
+                            </td>
+                        }
+                    }
+                </tr>
+                <tr>
+                    <td>
+                        <h4>+/- 25% Bounds &nbsp; &nbsp;</h4>
+                    </td>
+                    @for (var i = 0; i < product.monthlyLowerBounds.Count; i++)
+                    {
+                        var lBound = product.monthlyLowerBounds.ElementAt(i); //Regularly referencing i doesn't work
+                        var mean = product.predictedMonthlySales.ElementAt(i);
+                        var uBound = product.monthlyUpperBounds.ElementAt(i);
+                        <td>@lBound.Value</td>
+                        <td>@mean.Value</td>
+                        <td>@uBound.Value</td>
+                    }
+                </tr>
+                <tr>
+                    <td>
+                        <h4>+/- 5% Bounds &nbsp; &nbsp;</h4>
+                    </td>
+                    @for (var i = 0; i < product.ninetyFiveLowerBounds.Count; i++)
+                    {
+                        var lBound = product.ninetyFiveLowerBounds.ElementAt(i);
+                        var mean = product.predictedMonthlySales.ElementAt(i);
+                        var uBound = product.ninetyFiveUpperBounds.ElementAt(i);
+                        <td>@lBound.Value</td>
+                        <td>@mean.Value</td>
+                        <td>@uBound.Value</td>
+                    }
+                </tr>
+                <tr>
+                    <td>
+                        <h4>Sales Diff. &nbsp; &nbsp;</h4>
+                    </td>
+                    @for (var i = 0; i < product.meanSalesDifference.Count; i++)
+                    {
+                        var mDifference = product.meanSalesDifference.ElementAt(i);
+                        var lDifference = product.lowerSalesDifference.ElementAt(i);
+                        var uDifference = product.upperSalesDifference.ElementAt(i);
+                        <td>@mDifference.Value</td>
+                        <td>@lDifference.Value</td>
+                        <td>@uDifference.Value</td>
+                    }
+                </tr>
+                <tr>
+                    <td>
+                        <h4>% Diff. &nbsp; &nbsp;</h4>
+                    </td>
+                    @for (var i = 0; i < product.meanPercentageDifference.Count; i++)
+                    {
+                    var mDifference = product.meanPercentageDifference.ElementAt(i);
+                    var lDifference = product.lowerPercentageDifference.ElementAt(i);
+                    var uDifference = product.upperPercentageDifference.ElementAt(i);
+                        <td>@mDifference.Value</td>
+                        <td>@lDifference.Value</td>
+                        <td>@uDifference.Value</td>
+                    }
+                </tr>
+            </table>
+        </div>
+        <hr />
+        <br />
+    }
+</body>
+</html>
