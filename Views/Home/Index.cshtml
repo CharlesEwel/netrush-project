@@ -1,0 +1,75 @@
+@{
+    ViewBag.Title = "Index";
+}
+
+<html>
+    <head>
+        <link rel="stylesheet" href="~/Content/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="~/Content/css/Styles.css" />
+        <title>Monte Carlo Forecasting</title>
+    </head>
+    <body>
+        <h1>Monte Carlo Forecasting Simulation</h1>
+        <hr />
+        <br />
+        <div class="page-content">
+            <h2>Forecast Sales</h2>
+            <form action="Forecast" method="post">
+                <div class="row">
+                    <div class="col-xs-8">
+                        <p class="titles">Brand Forecasting</p>
+                        <div class="col-xs-6">
+                            <label for="accountCode">SalesForce Account Code:</label>
+                            <input type="text" name="accountCode" class="form-control" />
+                        </div>
+                        <div class="col-xs-6">
+                            <label for="accountNumber">SalesForce Account Number:</label>
+                            <input type="text" name="accountNumber" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <p class="titles">Product Forecasting</p>
+                        <div class="col-xs-12">
+                            <label for="nrCode">Product NRCode:</label>
+                            <input type="text" name="nrCode" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-xs-3">
+                        <div>
+                            <label for="numberOfPrevMonths">Number of Previous Months</label>
+                            <input type="number" name="numberOfPrevMonths" class="form-control" />
+                        </div>
+                        <p>*Default & Max: 12</p>
+                    </div>
+                    <div class="col-xs-9">
+                        <label for="customMonthlyBounds">Backtesting: Custom Monthly Bounds</label>
+                        <input type="text" name="backtestingCustomBoundPercentages" placeholder="10(lower % bound for 1st month)20(upper % bound for 1st month), 2025, 0530, etc..." class="form-control" />
+                        <p>*Default: 10% variance, 10%-20%</p>
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-xs-3">
+                        <div>
+                            <label for="numberOfForecastMonths">Number of Months to Forecast</label>
+                            <input type="number" name="numberOfForecastMonths" class="form-control" />
+                        </div>
+                        <p>*Default & Max: 12</p>
+                    </div>
+                    <div class="col-xs-9">
+                        <label for="customMonthlyBounds">Forecasting: Custom Monthly Bounds</label>
+                        <input type="text" name="forecastingCustomBoundPercentages" placeholder="10(lower % bound for 1st month)20(upper % bound for 1st month), 2025, 0530, etc..." class="form-control" />
+                        <p>*Default: 10% variance, 10%-20%</p>
+                    </div>
+                </div>
+                <br />
+                <br />
+                <button type="submit" class="btn btn-success">Forecast</button>
+            </form>
+            <br />
+        </div>
+    </body>
+</html>
